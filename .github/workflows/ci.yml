@@ -5,38 +5,54 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Executar Testes Automatizados
+    name: Executar Testes do Sistema
     
     steps:
     - name: Checkout do código
       uses: actions/checkout@v4
       
-    - name: Setup Node.js
+    - name: Configurar Node.js (apenas para executar JavaScript)
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
-        
-    - name: Executar testes
+        # REMOVEMOS o cache: npm que estava causando o erro
+      
+    - name: Executar testes automatizados
       run: |
-        echo "📋 Iniciando testes do sistema..."
+        echo "🚀 Iniciando testes do sistema de tarefas..."
         node tests/test.js
-        echo "✅ Todos os testes passaram!"
+        echo "✅ Testes executados com sucesso!"
         
-    - name: Validar HTML
+    - name: Validar estrutura do projeto
       run: |
-        echo "🔍 Validando estrutura do projeto..."
+        echo "🔍 Verificando arquivos do projeto..."
+        echo "📁 Estrutura de arquivos:"
+        ls -la
+        echo "📁 Conteúdo da pasta src:"
+        ls -la src/
+        echo "📁 Conteúdo da pasta tests:"
+        ls -la tests/
+        
+        # Validação dos arquivos essenciais
         if [ -f "src/index.html" ]; then
           echo "✅ Arquivo HTML encontrado"
         else
-          echo "❌ Arquivo HTML não encontrado"
+          echo "❌ ERRO: Arquivo HTML não encontrado"
           exit 1
         fi
         
-    - name: Finalização
-      run: |
-        echo "🎉 Pipeline executado com sucesso!"
-        echo "📊 Resumo:"
-        echo "   - Testes: ✅ OK"
-        echo "   - Estrutura: ✅ OK"
-        echo "   - Build: ✅ OK"
+        if [ -f "src/script.js" ]; then
+          echo "✅ Arquivo JavaScript encontrado"
+        else
+          echo "❌ ERRO: Arquivo JavaScript não encontrado"
+          exit 1
+        fi
+        
+        if [ -f "tests/test.js" ]; then
+          echo "✅ Arquivo de testes encontrado"
+        else
+          echo "❌ ERRO: Arquivo de testes não encontrado"
+          exit 1
+        fi
+        
+        echo "🎉 Estrutura do projeto validada com sucesso!"
